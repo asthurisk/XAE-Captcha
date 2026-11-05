@@ -287,6 +287,37 @@ print(f"TOTAL SCORES : {calculate_trust_score(scores)}")
 print(f"TOTAL AVERAGE : {calculate_simple_average(scores)}")
 print(f"POINTS (1 '#' equals 10 points) : {make_bar(points)}")
 print(f"POSSIBLE COMBINATIONS : {pin_combinations(digits)}")
-# Segment 5
+
+# Segment 5: Making the decision
+
+def make_decision(scores, trust_score, risk_index):
+    # Decide APPROVED, EXTRA CHECK or REJECTED. Returns a tuple: (decision, reason)
+    # Order matters here: the first check that matches wins.
+    needed = RISK_THRESHOLDS[risk_index]        # score needed for the chosen risk level
+    credential_score = scores[0]                # Credential is the first layer in LAYERS
+
+    if credential_score < MIN_CREDENTIAL:
+        decision = "REJECTED"
+        reason = f"Credential score {credential_score} is below the minimum of {MIN_CREDENTIAL} (hard rule)."
+    elif trust_score >= needed:
+        decision = "APPROVED"
+        reason = f"Trust score {trust_score} meets the {RISK_LEVELS[risk_index]}-risk threshold of {needed}."
+    elif trust_score >= needed - BORDERLINE_MARGIN:
+        decision = "EXTRA CHECK"
+        reason = f"Trust score {trust_score} is within {BORDERLINE_MARGIN} points below the threshold of {needed}."
+    else:
+        decision = "REJECTED"
+        reason = f"Trust score {trust_score} is too far below the threshold of {needed}."
+    return decision, reason
+
+
+def find_weakest_layer(scores):
+    # Find the layer with the lowest score. Returns a tuple: (layer name, score)
+    weakest = 0                                 # start by assuming the first layer is the weakest
+    for i in range(len(scores)):
+        if scores[i] < scores[weakest]:         # found a lower score, remember its position
+            weakest = i
+    return LAYERS[weakest][0], scores[weakest]
+
 
 # Segment 6
