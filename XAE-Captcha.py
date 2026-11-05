@@ -319,5 +319,4 @@ def find_weakest_layer(scores):
             weakest = i
     return LAYERS[weakest][0], scores[weakest]
 
-
 # Segment 6
