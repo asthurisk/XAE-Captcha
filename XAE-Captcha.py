@@ -60,6 +60,60 @@ print(REGISTRY[0][0])  #should print Aina
 
 # Segment 2: Input helpers - asking questions safely
 
+#function 1: asking for non-empty text
+def ask_text(prompt):
+    while True:
+        answer = input(prompt).strip() #strip() to remove spaces
+
+        if answer != "":
+            return answer
+        else:
+            print("Error: Input cannot be empty.")
+
+#function 2: asking for whole number
+def ask_whole_num(prompt, low, high):
+    while True:
+        answer = input(prompt)
+
+        if answer.isdigit():
+            number = int(answer)
+
+            if number >= low and number <= high:
+                return number
+            else:
+                print("Error: Number is outside the range.")
+        else:
+            print("Error: Please enter a whole number.")
+
+#function 3: asking for risk level
+def ask_risk_level():
+    print("Select Risk Level: ")
+
+    for i in range(len(RISK_LEVEL)):
+        print(f"{i + 1}.{RISK_LEVEL[i]}")
+
+    choice = ask_whole_num("Enter your choice: ", low, high) #low and high to be set next
+    return choice - 1
+
+#function 4: ask for YES or NO
+def ask_yes_no(prompt):
+    while True:
+        answer = input(prompt).strip().upper()
+
+        if answer == "YES":
+            return answer
+        elif answer == "NO":
+            return answer
+        else:
+            print("Error: Invalid input (Yes or No).")
+
+#finction 5: find registered person
+def find_person(username):
+    for record in REGISTRY: #REGISTRY depends on segment 1
+        if record[0] == username:
+            return record
+
+    return None
 # Segment 3: The five verification tests
 
 # Each tests asks questions, checks the answers and then returns a tuple:
