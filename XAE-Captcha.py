@@ -320,3 +320,59 @@ def find_weakest_layer(scores):
     return LAYERS[weakest][0], scores[weakest]
 
 # Segment 6
+def check_one_person(history):
+    username = ask_text("Claimed username: ").lower()
+    risk_index = ask_risk_level()
+    risk_level = RISK_LEVELS[risk_index]
+    record = find_record(username)
+
+    if record is None:
+        print(f"REJECTED: username '{username}' is not registered.")
+        history.append((username, risk_level, None, "REJECTED"))
+        return
+
+    scores, notes = run_all_tests(record)
+    trust_score = calculate_trust_score(scores)
+    average_score = calculate_simple_average(scores)
+    decision, reason = make_decision(scores, trust_score, risk_index)
+    weakest_layer, weakest_score = find_weakest_layer(scores)
+
+    print("\nVerification report")
+    for i, (layer_name, _, _) in enumerate(LAYERS):
+        bar = make_bar(scores[i]) if SHOW_BARS else ""
+        print(f"{layer_name:18} {scores[i]:3}/100  {bar:10} {notes[i]}")
+    print(f"Trust score: {trust_score}/100")
+    print(f"Simple average: {average_score}/100")
+    print(f"Weakest layer: {weakest_layer} ({weakest_score}/100)")
+    print(f"Decision: {decision} - {reason}")
+    history.append((username, risk_level, trust_score, decision))
+
+
+def show_summary(history):
+    counts = {"APPROVED": 0, "EXTRA CHECK": 0, "REJECTED": 0}
+    print("\nSession summary")
+    print(f"{'Username':<16} {'Risk':<10} {'Trust score':<12} Decision")
+    print("-" * 58)
+    for username, risk_level, trust_score, decision in history:
+        score_text = "N/A" if trust_score is None else f"{trust_score}/100"
+        print(f"{username:<16} {risk_level:<10} {score_text:<12} {decision}")
+        counts[decision] += 1
+    print("-" * 58)
+    print(
+        f"Approved: {counts['APPROVED']} | "
+        f"Extra check: {counts['EXTRA CHECK']} | "
+        f"Rejected: {counts['REJECTED']}"
+    )
+
+
+def main():
+    print(f"=== {APP_NAME} Identity Verification ({YEAR}) ===")
+    history = []
+    while True:
+        check_one_person(history)
+        if ask_yes_no("Check another person? ") == "NO":
+            break
+    show_summary(history)
+
+
+main()
