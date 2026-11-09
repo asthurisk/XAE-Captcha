@@ -65,7 +65,7 @@ RISK_THRESHOLDS = [50, 70, 90]
 # function 1: asking for non-empty text
 def ask_text(prompt):
     while True:
-        answer = input(prompt).strip()  # strip() to remove spaces
+        answer = input(prompt).strip()  # strip() to remove spaces at the beginning and at the end
         if answer != "":
             return answer
         else:
